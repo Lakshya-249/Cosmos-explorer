@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+.query-builder-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.top-section {
+  flex: 0 0 auto; /* query builder stays fixed height */
+  max-height: 200px; /* limit growth */
+  overflow-y: auto;
+}
+
+.bottom-section {
+  flex: 1 1 auto; /* json view takes remaining space */
+  overflow-y: auto;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
