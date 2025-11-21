@@ -99,7 +99,7 @@ export default function Sidebar({ open, setOpen, setCollectionSelected }) {
     <div
       className={`fixed top-0 left-0 h-full bg-white border-r shadow-md 
         transition-all duration-300 z-50 flex flex-col
-        ${open ? "w-65" : "w-20"}`}
+        ${open ? "w-85" : "w-20"}`}
     >
       {/* Sidebar Header */}
       <SidebarHeader

@@ -4,6 +4,10 @@ import { Play, Plus, Trash2 } from "lucide-react";
 const QueryBuilder = ({ onExecuteQuery }) => {
   const [queryMode, setQueryMode] = useState("visual"); // 'visual' or 'sql'
   const [sqlQuery, setSqlQuery] = useState("SELECT TOP 10 * FROM c");
+  const [orderBy, setOrderBy] = useState({
+    field: "",
+    direction: "ASC",
+  });
   const [conditions, setConditions] = useState([]);
   const [isExecuting, setIsExecuting] = useState(false);
 
@@ -59,12 +63,19 @@ const QueryBuilder = ({ onExecuteQuery }) => {
   const generateQuery = () => {
     if (queryMode === "sql") return sqlQuery;
 
-    if (conditions.length === 0) return "SELECT TOP 10 * FROM c";
+    let orderClause = "";
+    if (orderBy.field) {
+      orderClause = ` ORDER BY c.${orderBy.field} ${orderBy.direction}`;
+    }
+
+    if (conditions.length === 0 && !orderBy.field)
+      return "SELECT TOP 10 * FROM c";
 
     let whereClause = "";
     let validConditions = conditions.filter((cond) => cond.field && cond.value);
 
-    if (validConditions.length === 0) return "SELECT TOP 10 * FROM c";
+    if (validConditions.length === 0 && !orderBy.field)
+      return "SELECT TOP 10 * FROM c";
 
     validConditions.forEach((cond, index) => {
       let conditionSql = "";
@@ -133,7 +144,11 @@ const QueryBuilder = ({ onExecuteQuery }) => {
       }
     });
 
-    return `SELECT TOP 10 * FROM c WHERE ${whereClause}`;
+    console.log("order clause: ", orderClause);
+
+    return `SELECT TOP 10 * FROM c${
+      whereClause ? " WHERE " + whereClause : ""
+    }${orderClause}`;
   };
 
   const executeQuery = async () => {
@@ -266,6 +281,35 @@ const QueryBuilder = ({ onExecuteQuery }) => {
               ))}
             </div>
           )}
+
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600">Order By</span>
+            </div>
+
+            <div className="flex flex-wrap items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+              <input
+                type="text"
+                placeholder="Field name"
+                value={orderBy.field}
+                onChange={(e) =>
+                  setOrderBy((prev) => ({ ...prev, field: e.target.value }))
+                }
+                className="flex-1 px-2 py-1 bg-black/2 rounded text-sm"
+              />
+
+              <select
+                value={orderBy.direction}
+                onChange={(e) =>
+                  setOrderBy((prev) => ({ ...prev, direction: e.target.value }))
+                }
+                className="px-3 py-1 rounded text-sm bg-black/2 text-gray-600"
+              >
+                <option value="ASC">ASC</option>
+                <option value="DESC">DESC</option>
+              </select>
+            </div>
+          </div>
 
           <div className="bg-gray-900 rounded-lg p-3 font-mono text-sm text-green-400">
             <div className="text-gray-400 text-xs mb-1">
