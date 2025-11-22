@@ -8,6 +8,8 @@ const JsonViewer = ({
   data,
   onUpdate,
   onDelete,
+  deleteLoading,
+  deletingId,
   onRefresh,
   pagination,
   onPageChange,
@@ -19,6 +21,8 @@ const JsonViewer = ({
 
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
+
+  console.log("Deleting ID: ", deletingId);
 
   const handleSaveEdit = async (index) => {
     try {
@@ -144,11 +148,15 @@ const JsonViewer = ({
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => onDelete(index, item)}
-                      className="text-red-500 hover:text-red-700 transition-colors duration-150"
-                      title="Delete document"
+                      onClick={() => onDelete(item?.id || "fjiono")}
+                      disabled={deleteLoading && deletingId === item.id}
+                      className="text-red-500 hover:text-red-700 relative"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      {deleteLoading && deletingId === item.id ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-red-500 border-t-transparent rounded-full"></div>
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 )}

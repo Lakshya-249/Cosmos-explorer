@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Play, Plus, Trash2 } from "lucide-react";
 
 const QueryBuilder = ({ onExecuteQuery }) => {
@@ -151,7 +151,7 @@ const QueryBuilder = ({ onExecuteQuery }) => {
     }${orderClause}`;
   };
 
-  const executeQuery = async () => {
+  const executeQuery = useCallback(async () => {
     setIsExecuting(true);
     try {
       const query = generateQuery();
@@ -159,7 +159,18 @@ const QueryBuilder = ({ onExecuteQuery }) => {
     } finally {
       setIsExecuting(false);
     }
-  };
+  }, [generateQuery, queryMode, onExecuteQuery]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key === "Enter") {
+        executeQuery();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [executeQuery]);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6">

@@ -3,6 +3,7 @@ import { Search, Plus, X, Save } from "../../icons/index";
 import QueryBuilder from "./QueryBuilder";
 import JsonViewer from "./DataViewer";
 import { useQuery } from "../../hooks/CollectionQuery";
+import { useDelete } from "../../hooks/Delete";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);
@@ -10,8 +11,15 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
   const [newItemData, setNewItemData] = useState(
     '{\n  "id": "",\n  "name": "",\n  "email": ""\n}'
   );
+  const [deletingId, setDeletingId] = useState(null);
 
-  const { isLoading, error: queryError, fetchQuery, data } = useQuery();
+  const {
+    isLoading,
+    error: queryError,
+    fetchQuery,
+    data,
+    setData: setList,
+  } = useQuery();
 
   const handleCreate = async () => {
     try {
@@ -41,6 +49,33 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
       console.log(`Executing ${queryMode} query:`, query);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const {
+    isLoading: deleteLoading,
+    error: deleteerror,
+    deleteData,
+    data: deletedData,
+  } = useDelete();
+
+  const handleDelete = async (did) => {
+    const start = Date.now();
+    setError(null);
+
+    try {
+      setDeletingId(did);
+      await deleteData(did);
+      if (deleteerror) {
+        setError("Error deleting data:", deleteerror);
+        return;
+      }
+
+      setList((prev) => prev.filter((item) => item.id !== did));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -81,7 +116,12 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 </div>
               </div>
             ) : data && data?.length ? (
-              <JsonViewer data={data} />
+              <JsonViewer
+                data={data}
+                onDelete={handleDelete}
+                deleteLoading={deleteLoading}
+                deletingId={deletingId}
+              />
             ) : (
               <div className="bg-white border border-gray-200 rounded-lg py-2">
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 mb-2">
