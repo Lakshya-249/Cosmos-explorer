@@ -13,6 +13,7 @@ const JsonViewer = ({
   onRefresh,
   pagination,
   onPageChange,
+  updateLoading,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newItemData, setNewItemData] = useState(
@@ -24,13 +25,17 @@ const JsonViewer = ({
 
   console.log("Deleting ID: ", deletingId);
 
-  const handleSaveEdit = async (index) => {
+  const handleSaveEdit = async (id) => {
     try {
+      console.log("Edit Value: ", editValue);
+
       const parsedData = JSON.parse(editValue);
-      await onUpdate(index, parsedData);
-      setEditIndex(null);
+      await onUpdate(id || "fdscx", parsedData);
       setEditValue("");
+      setEditIndex(null);
     } catch (error) {
+      console.log("Error: ", error);
+
       alert("Invalid JSON format while saving edit.");
     }
   };
@@ -117,20 +122,26 @@ const JsonViewer = ({
                 Document {index + 1}
               </span>
               <div className="flex space-x-2">
-                {editIndex === index ? (
+                {editIndex === item.id ? (
                   <>
                     <button
-                      onClick={() => handleSaveEdit(index)}
-                      className="flex items-center px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                      onClick={() => handleSaveEdit(item.id)}
+                      disabled={updateLoading && editIndex === item.id}
+                      className="flex items-center px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
                     >
-                      <Save className="w-3 h-3 mr-1" /> Save
+                      {updateLoading && editIndex === item.id ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full mr-1"></div>
+                      ) : (
+                        <Save className="w-3 h-3 mr-1" />
+                      )}{" "}
+                      Save
                     </button>
                     <button
                       onClick={() => {
                         setEditIndex(null);
                         setEditValue("");
                       }}
-                      className="flex items-center px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                      className="flex items-center px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded hover:bg-gray-400 cursor-pointer"
                     >
                       <X className="w-3 h-3 mr-1" /> Cancel
                     </button>
@@ -139,10 +150,10 @@ const JsonViewer = ({
                   <div className="flex space-x-4 p-2">
                     <button
                       onClick={() => {
-                        setEditIndex(index);
+                        setEditIndex(item.id);
                         setEditValue(JSON.stringify(item, null, 2));
                       }}
-                      className="text-blue-500 hover:text-blue-700 transition-colors duration-150"
+                      className="text-blue-500 hover:text-blue-700 transition-colors duration-150 cursor-pointer"
                       title="Edit document"
                     >
                       <Edit3 className="w-4 h-4" />
@@ -150,7 +161,7 @@ const JsonViewer = ({
                     <button
                       onClick={() => onDelete(item?.id || "fjiono")}
                       disabled={deleteLoading && deletingId === item.id}
-                      className="text-red-500 hover:text-red-700 relative"
+                      className="text-red-500 hover:text-red-700 relative cursor-pointer"
                     >
                       {deleteLoading && deletingId === item.id ? (
                         <div className="animate-spin h-4 w-4 border-2 border-red-500 border-t-transparent rounded-full"></div>
@@ -164,7 +175,7 @@ const JsonViewer = ({
             </div>
 
             {/* JSON Viewer / Editor */}
-            {editIndex === index ? (
+            {editIndex === item.id ? (
               <textarea
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}

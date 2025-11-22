@@ -19,7 +19,7 @@ export default function AddConnectionModal({ onClose, onSave }) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl p-5 w-[28rem] transform transition-all duration-200 scale-100 hover:scale-[1.01]"
+        className="bg-white rounded-xl shadow-xl py-5 px-6.5 w-[28rem] transform transition-all duration-200 scale-100 hover:scale-[1.01]"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-semibold mb-4 text-gray-800">
@@ -32,7 +32,7 @@ export default function AddConnectionModal({ onClose, onSave }) {
             placeholder="Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 transition"
           />
 
           {/* Endpoint */}
@@ -42,7 +42,7 @@ export default function AddConnectionModal({ onClose, onSave }) {
             value={form.endpoint}
             onChange={handleChange}
             rows={3}
-            className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-100 transition"
           />
 
           {/* Key */}
@@ -52,7 +52,7 @@ export default function AddConnectionModal({ onClose, onSave }) {
             value={form.key}
             onChange={handleChange}
             rows={3}
-            className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            className="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-100 transition"
           />
 
           {/* Buttons */}
@@ -60,13 +60,13 @@ export default function AddConnectionModal({ onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="px-3 py-1.5 bg-gray-100 rounded-lg hover:bg-gray-200 transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="px-3 py-1.5 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition cursor-pointer"
             >
               Save
             </button>

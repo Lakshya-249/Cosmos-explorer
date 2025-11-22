@@ -4,6 +4,7 @@ import QueryBuilder from "./QueryBuilder";
 import JsonViewer from "./DataViewer";
 import { useQuery } from "../../hooks/CollectionQuery";
 import { useDelete } from "../../hooks/Delete";
+import { useUpdate } from "../../hooks/Update";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);
@@ -79,6 +80,30 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
     }
   };
 
+  const {
+    isLoading: updateLoading,
+    error: updateError,
+    updateData,
+    data: updatedData,
+  } = useUpdate();
+
+  const handleUpdate = async (did, data) => {
+    const start = Date.now();
+    setError(null);
+
+    try {
+      await updateData(data);
+      if (updateError) {
+        setError("Error updating data:", updateError);
+        return;
+      }
+
+      setList((prev) => prev.map((item) => (item.id === did ? data : item)));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -121,6 +146,8 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 onDelete={handleDelete}
                 deleteLoading={deleteLoading}
                 deletingId={deletingId}
+                onUpdate={handleUpdate}
+                updateLoading={updateLoading}
               />
             ) : (
               <div className="bg-white border border-gray-200 rounded-lg py-2">
