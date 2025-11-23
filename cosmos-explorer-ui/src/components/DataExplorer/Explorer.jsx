@@ -77,6 +77,7 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
       }
 
       setList((prev) => prev.filter((item) => item.id !== did));
+      setSuccess("Data deleted successfully");
     } catch (err) {
       setError(err.message);
     } finally {

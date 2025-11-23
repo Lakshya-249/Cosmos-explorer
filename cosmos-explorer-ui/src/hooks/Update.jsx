@@ -28,7 +28,7 @@ export const useUpdate = () => {
       }
       const result = await response.json();
 
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 1000));
       setData(result);
       return result;
     } catch (err) {
