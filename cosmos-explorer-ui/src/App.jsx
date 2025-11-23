@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Sidebar from "./components/SideBar/Sidebar.jsx";
-import Dashboard from "./components/Dashboard.jsx";
 import Explorer from "./components/DataExplorer/Explorer.jsx";
 import { getSelectedCollection } from "./utils/collection.store.js";
 

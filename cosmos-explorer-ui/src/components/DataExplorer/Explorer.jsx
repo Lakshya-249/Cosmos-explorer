@@ -5,9 +5,11 @@ import JsonViewer from "./DataViewer";
 import { useQuery } from "../../hooks/CollectionQuery";
 import { useDelete } from "../../hooks/Delete";
 import { useUpdate } from "../../hooks/Update";
+import { useAddData } from "../../hooks/AddData";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newItemData, setNewItemData] = useState(
     '{\n  "id": "",\n  "name": "",\n  "email": ""\n}'
@@ -27,18 +29,20 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
       const parsedData = JSON.parse(newItemData);
       console.log(parsedData);
 
-      // await onUpdate(-1, parsedData); // -1 indicates new item
-      // setShowCreateForm(false);
-      // setNewItemData('{\n  "id": "",\n  "name": "",\n  "email": ""\n}');
+      await addData(parsedData);
+
+      setSuccess("Data added successfully: Please Refresh Page.");
+      setShowCreateForm(false);
+      setNewItemData('{\n  "id": "",\n  "name": "",\n  "email": ""\n}');
     } catch (error) {
       console.log("Error creating new item:", error);
-
       alert("Invalid JSON format. Please check your syntax.");
     }
   };
 
   const handleExecuteQuery = async (query, queryMode) => {
     setError(null);
+    setSuccess(null);
 
     try {
       await fetchQuery(query);
@@ -99,6 +103,34 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
       }
 
       setList((prev) => prev.map((item) => (item.id === did ? data : item)));
+
+      setSuccess("Data updated successfully");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const {
+    isLoading: addLoading,
+    error: addError,
+    addData,
+    data: addedData,
+  } = useAddData();
+
+  const handleAddData = async (data) => {
+    try {
+      await addData(data);
+
+      if (addError) {
+        setError("Error adding data:", addError);
+        return;
+      }
+
+      console.log("Added Data:", addedData);
+
+      setSuccess("Data added successfully: Please Refresh Page.");
+
+      // setList((prev) => [...prev, addedData]);
     } catch (err) {
       setError(err.message);
     }
@@ -131,6 +163,16 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 </div>
               </div>
             )}
+
+            {success && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <div className="text-green-800">
+                    <strong>Success:</strong> {success}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div className="space-y-6">
             {isLoading ? (
@@ -148,6 +190,8 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 deletingId={deletingId}
                 onUpdate={handleUpdate}
                 updateLoading={updateLoading}
+                onAddData={handleAddData}
+                addLoading={addLoading}
               />
             ) : (
               <div className="bg-white border border-gray-200 rounded-lg py-2">
@@ -189,10 +233,11 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                       </button>
                       <button
                         onClick={handleCreate}
-                        className="flex items-center space-x-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                        disabled={addLoading}
+                        className="flex items-center space-x-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 cursor-pointer"
                       >
                         <Save className="w-3 h-3" />
-                        <span>Create</span>
+                        <span>{addLoading ? "Creating..." : "Create"}</span>
                       </button>
                     </div>
                   </div>

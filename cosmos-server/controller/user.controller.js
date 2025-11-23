@@ -151,6 +151,8 @@ const userController = {
 
       const { id, database, collection } = validation.data;
 
+      console.log("Validation Data: ", validation.data);
+
       const data = req.body;
 
       if (!data || Object.keys(data).length === 0) {

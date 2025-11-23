@@ -14,6 +14,8 @@ const JsonViewer = ({
   pagination,
   onPageChange,
   updateLoading,
+  onAddData,
+  addLoading,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newItemData, setNewItemData] = useState(
@@ -35,7 +37,6 @@ const JsonViewer = ({
       setEditIndex(null);
     } catch (error) {
       console.log("Error: ", error);
-
       alert("Invalid JSON format while saving edit.");
     }
   };
@@ -43,10 +44,11 @@ const JsonViewer = ({
   const handleCreate = async () => {
     try {
       const parsedData = JSON.parse(newItemData);
-      await onUpdate(-1, parsedData);
+      await onAddData(parsedData);
       setShowCreateForm(false);
       setNewItemData('{\n  "id": "",\n  "name": "",\n  "email": ""\n}');
     } catch (error) {
+      console.log("Error creating new item:", error);
       alert("❌ Invalid JSON format. Please check your syntax.");
     }
   };
@@ -59,6 +61,7 @@ const JsonViewer = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowCreateForm(true)}
+            disabled={addLoading}
             className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition"
           >
             <Plus className="w-4 h-4" />
@@ -99,10 +102,11 @@ const JsonViewer = ({
             </button>
             <button
               onClick={handleCreate}
-              className="flex items-center gap-1 px-4 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
+              disabled={addLoading}
+              className="flex items-center gap-1 px-4 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700 transition cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              Create
+              {addLoading ? "Creating..." : "Create"}
             </button>
           </div>
         </div>
@@ -122,7 +126,7 @@ const JsonViewer = ({
                 Document {index + 1}
               </span>
               <div className="flex space-x-2">
-                {editIndex === item.id ? (
+                {editIndex === item?.id ? (
                   <>
                     <button
                       onClick={() => handleSaveEdit(item.id)}
