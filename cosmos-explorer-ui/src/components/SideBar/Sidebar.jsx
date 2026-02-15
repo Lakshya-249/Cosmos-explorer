@@ -14,7 +14,7 @@ import { useCollection } from "../../hooks/Collection.jsx";
 import { ErrorPopup } from "../ErrorPop.jsx";
 import { setSelectedCollection } from "../../utils/collection.store.js";
 
-export default function Sidebar({ open, setOpen, setCollectionSelected }) {
+export default function Sidebar({ open, setOpen, onCollectionClick }) {
   const [openFolders, setOpenFolders] = useState({});
   const [openSubFolders, setOpenSubFolders] = useState({});
   const { addConnection, getConnections, isLoading, error, connections } =
@@ -91,15 +91,15 @@ export default function Sidebar({ open, setOpen, setCollectionSelected }) {
   };
 
   const handleSelectedFile = (id, database, file) => {
-    setCollectionSelected(file);
+    onCollectionClick({ id, file, database });
     setSelectedCollection(id, database, file);
   };
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-white border-r shadow-md 
-        transition-all duration-300 z-50 flex flex-col
-        ${open ? "w-85" : "w-20"}`}
+      className={`h-full bg-white border-r shadow-md
+        transition-all duration-300 flex flex-col
+        ${open ? "w-80" : "w-20"}`}
     >
       {/* Sidebar Header */}
       <SidebarHeader
@@ -199,7 +199,7 @@ export default function Sidebar({ open, setOpen, setCollectionSelected }) {
                                   toggleSubFolderOpen(
                                     sub.id,
                                     sub.parentId,
-                                    sub.name
+                                    sub.name,
                                   )
                                 }
                               />
@@ -222,7 +222,7 @@ export default function Sidebar({ open, setOpen, setCollectionSelected }) {
                                     handleSelectedFile(
                                       folder.id,
                                       sub.name,
-                                      file
+                                      file,
                                     )
                                   }
                                   className="flex items-center gap-2 p-1 rounded-md cursor-pointer flex-wrap

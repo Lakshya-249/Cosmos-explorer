@@ -1,19 +1,27 @@
 import { memo, useState } from "react";
-import { Search, Plus, X, Save } from "../../icons/index";
 import QueryBuilder from "./QueryBuilder";
 import JsonViewer from "./DataViewer";
 import { useQuery } from "../../hooks/CollectionQuery";
 import { useDelete } from "../../hooks/Delete";
 import { useUpdate } from "../../hooks/Update";
 import { useAddData } from "../../hooks/AddData";
+import { GetSuggestionsArray } from "../../utils/helper.service";
+import { useMemo } from "react";
+import CreateForm from "./CreateForm";
+import { Loader2 } from "../Loader";
+import { ErrorResponse, SuccessResponse } from "../Response";
+import { Search, Plus } from "../../icons/index";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newItemData, setNewItemData] = useState(
-    '{\n  "id": "",\n  "name": "",\n  "email": ""\n}'
+    '{\n  "id": "",\n  "name": "",\n  "email": ""\n}',
   );
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [deletingId, setDeletingId] = useState(null);
 
   const {
@@ -61,11 +69,9 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
     isLoading: deleteLoading,
     error: deleteerror,
     deleteData,
-    data: deletedData,
   } = useDelete();
 
   const handleDelete = async (did) => {
-    const start = Date.now();
     setError(null);
 
     try {
@@ -89,11 +95,9 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
     isLoading: updateLoading,
     error: updateError,
     updateData,
-    data: updatedData,
   } = useUpdate();
 
   const handleUpdate = async (did, data) => {
-    const start = Date.now();
     setError(null);
 
     try {
@@ -137,6 +141,17 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
     }
   };
 
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1); // reset to first page
+  };
+
+  const offset = useMemo(() => (page - 1) * limit, [page, limit]);
+
+  const suggestions = useMemo(() => {
+    return GetSuggestionsArray(data, selectedCollection);
+  }, [data, selectedCollection]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -153,39 +168,25 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* xl:grid-cols-2 */}
           <div className="space-y-6">
-            <QueryBuilder onExecuteQuery={handleExecuteQuery} />
+            <QueryBuilder
+              onExecuteQuery={handleExecuteQuery}
+              offset={offset}
+              limit={limit}
+              suggestions={suggestions}
+            />
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center">
-                  <div className="text-red-800">
-                    <strong>Error:</strong> {error}
-                  </div>
-                </div>
-              </div>
-            )}
+            {error && <ErrorResponse error={error} />}
 
-            {success && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center">
-                  <div className="text-green-800">
-                    <strong>Success:</strong> {success}
-                  </div>
-                </div>
-              </div>
-            )}
+            {success && <SuccessResponse success={success} />}
           </div>
           <div className="space-y-6">
             {isLoading ? (
-              <div className="bg-white border border-gray-200 rounded-lg p-8">
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-3 text-gray-600">Executing query...</span>
-                </div>
-              </div>
-            ) : data && data?.length ? (
+              <Loader2 />
+            ) : data &&
+              data[selectedCollection] &&
+              data[selectedCollection]?.length ? (
               <JsonViewer
-                data={data}
+                data={data[selectedCollection]}
                 onDelete={handleDelete}
                 deleteLoading={deleteLoading}
                 deletingId={deletingId}
@@ -193,6 +194,13 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 updateLoading={updateLoading}
                 onAddData={handleAddData}
                 addLoading={addLoading}
+                pagination={{
+                  page,
+                  limit,
+                  total: data[selectedCollection]?.length || 0,
+                }}
+                onPageChange={setPage}
+                onLimitChange={handleLimitChange}
               />
             ) : (
               <div className="bg-white border border-gray-200 rounded-lg py-2">
@@ -207,41 +215,13 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
                 </div>
                 {/* Create Form Modal */}
                 {showCreateForm && (
-                  <div className="p-4 border-b border-gray-200 bg-green-50 mb-2">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-gray-900">
-                        Create New Document
-                      </h4>
-                      <button
-                        onClick={() => setShowCreateForm(false)}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <textarea
-                      value={newItemData}
-                      onChange={(e) => setNewItemData(e.target.value)}
-                      className="w-full h-32 px-3 py-2 border border-gray-300 rounded font-mono text-sm resize-none"
-                      placeholder="Enter JSON data for the new document..."
-                    />
-                    <div className="flex justify-end space-x-2 mt-3">
-                      <button
-                        onClick={() => setShowCreateForm(false)}
-                        className="px-3 py-1 text-gray-600 hover:text-gray-900 text-sm"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleCreate}
-                        disabled={addLoading}
-                        className="flex items-center space-x-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 cursor-pointer"
-                      >
-                        <Save className="w-3 h-3" />
-                        <span>{addLoading ? "Creating..." : "Create"}</span>
-                      </button>
-                    </div>
-                  </div>
+                  <CreateForm
+                    setShowCreateForm={setShowCreateForm}
+                    newItemData={newItemData}
+                    setNewItemData={setNewItemData}
+                    handleCreate={handleCreate}
+                    addLoading={addLoading}
+                  />
                 )}
                 <div className="text-center text-gray-500">
                   <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
