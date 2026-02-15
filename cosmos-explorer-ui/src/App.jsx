@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Sidebar from "./components/SideBar/Sidebar.jsx";
-import CosmosDBExplorer from "./components/DataExplorer/Explorer.jsx";
+import Sidebar from "./pages/Sidebar.jsx";
+import CosmosDBExplorer from "./pages/Explorer.jsx";
 import { useEffect } from "react";
 import { setSelectedCollection } from "./utils/collection.store.js";
 

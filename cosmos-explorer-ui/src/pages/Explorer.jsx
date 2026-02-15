@@ -1,16 +1,15 @@
-import { memo, useState } from "react";
-import QueryBuilder from "./QueryBuilder";
-import JsonViewer from "./DataViewer";
-import { useQuery } from "../../hooks/CollectionQuery";
-import { useDelete } from "../../hooks/Delete";
-import { useUpdate } from "../../hooks/Update";
-import { useAddData } from "../../hooks/AddData";
-import { GetSuggestionsArray } from "../../utils/helper.service";
-import { useMemo } from "react";
-import CreateForm from "./CreateForm";
-import { Loader2 } from "../Loader";
-import { ErrorResponse, SuccessResponse } from "../Response";
-import { Search, Plus } from "../../icons/index";
+import { memo, useState, useMemo } from "react";
+import QueryBuilder from "../components/DataExplorer/QueryBuilder";
+import JsonViewer from "../components/DataExplorer/DataViewer";
+import { useQuery } from "../hooks/CollectionQuery";
+import { useDelete } from "../hooks/Delete";
+import { useUpdate } from "../hooks/Update";
+import { useAddData } from "../hooks/AddData";
+import { GetSuggestionsArray } from "../utils/helper.service";
+import CreateForm from "../components/DataExplorer/CreateForm";
+import { Loader2 } from "../components/Loader";
+import { ErrorResponse, SuccessResponse } from "../components/Response";
+import { Search, Plus } from "../icons/index";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);

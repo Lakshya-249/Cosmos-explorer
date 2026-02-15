@@ -5,14 +5,14 @@ import {
   Folder,
   FolderOpen,
   File,
-} from "../../icons/index.jsx";
-import SidebarHeader from "./SidebarHeader";
-import Loader from "../Loader.jsx";
-import { useConnection } from "../../hooks/Connection.jsx";
-import { useDatabase } from "../../hooks/Database.jsx";
-import { useCollection } from "../../hooks/Collection.jsx";
-import { ErrorPopup } from "../ErrorPop.jsx";
-import { setSelectedCollection } from "../../utils/collection.store.js";
+} from "../icons/index.jsx";
+import SidebarHeader from "../components/SideBar/SidebarHeader.jsx";
+import Loader from "../components/Loader.jsx";
+import { useConnection } from "../hooks/Connection.jsx";
+import { useDatabase } from "../hooks/Database.jsx";
+import { useCollection } from "../hooks/Collection.jsx";
+import { ErrorPopup } from "../components/ErrorPop.jsx";
+import { setSelectedCollection } from "../utils/collection.store.js";
 
 export default function Sidebar({ open, setOpen, onCollectionClick }) {
   const [openFolders, setOpenFolders] = useState({});
