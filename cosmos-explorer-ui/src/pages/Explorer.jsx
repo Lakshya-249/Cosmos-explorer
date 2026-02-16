@@ -5,7 +5,6 @@ import { useQuery } from "../hooks/CollectionQuery";
 import { useDelete } from "../hooks/Delete";
 import { useUpdate } from "../hooks/Update";
 import { useAddData } from "../hooks/AddData";
-import { GetSuggestionsArray } from "../utils/helper.service";
 import CreateForm from "../components/DataExplorer/CreateForm";
 import { Loader2 } from "../components/Loader";
 import { ErrorResponse, SuccessResponse } from "../components/Response";
