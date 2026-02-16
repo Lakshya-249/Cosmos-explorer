@@ -1,144 +1,36 @@
 import { memo, useState, useMemo } from "react";
 import QueryBuilder from "../components/DataExplorer/QueryBuilder";
 import JsonViewer from "../components/DataExplorer/DataViewer";
-import { useQuery } from "../hooks/CollectionQuery";
-import { useDelete } from "../hooks/Delete";
-import { useUpdate } from "../hooks/Update";
-import { useAddData } from "../hooks/AddData";
 import CreateForm from "../components/DataExplorer/CreateForm";
 import { Loader2 } from "../components/Loader";
 import { ErrorResponse, SuccessResponse } from "../components/Response";
 import { Search, Plus } from "../icons/index";
 import { useExtractKeys } from "../hooks/ExtractKeys";
+import { useExplorerCrud } from "../hooks/ExplorerCrud";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newItemData, setNewItemData] = useState(
-    '{\n  "id": "",\n  "name": "",\n  "email": ""\n}',
-  );
-
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [deletingId, setDeletingId] = useState(null);
 
   const {
-    isLoading,
-    error: queryError,
-    fetchQuery,
     data,
-    setData: setList,
-  } = useQuery();
-
-  const handleCreate = async () => {
-    try {
-      const parsedData = JSON.parse(newItemData);
-      console.log(parsedData);
-
-      await addData(parsedData);
-
-      setSuccess("Data added successfully: Please Refresh Page.");
-      setShowCreateForm(false);
-      setNewItemData('{\n  "id": "",\n  "name": "",\n  "email": ""\n}');
-    } catch (error) {
-      console.log("Error creating new item:", error);
-      alert("Invalid JSON format. Please check your syntax.");
-    }
-  };
-
-  const handleExecuteQuery = async (query, queryMode) => {
-    setError(null);
-    setSuccess(null);
-
-    try {
-      await fetchQuery(query);
-      if (queryError) {
-        setError("Error Getting Data:", queryError);
-        return;
-      }
-
-      console.log(`Executing ${queryMode} query:`, query);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const {
-    isLoading: deleteLoading,
-    error: deleteerror,
-    deleteData,
-  } = useDelete();
-
-  const handleDelete = async (did) => {
-    setError(null);
-
-    try {
-      setDeletingId(did);
-      await deleteData(did);
-      if (deleteerror) {
-        setError("Error deleting data:", deleteerror);
-        return;
-      }
-
-      setList((prev) => prev.filter((item) => item.id !== did));
-      setSuccess("Data deleted successfully");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const {
-    isLoading: updateLoading,
-    error: updateError,
-    updateData,
-  } = useUpdate();
-
-  const handleUpdate = async (did, data) => {
-    setError(null);
-
-    try {
-      await updateData(data);
-      if (updateError) {
-        setError("Error updating data:", updateError);
-        return;
-      }
-
-      setList((prev) => prev.map((item) => (item.id === did ? data : item)));
-
-      setSuccess("Data updated successfully");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const {
-    isLoading: addLoading,
-    error: addError,
-    addData,
-    data: addedData,
-  } = useAddData();
-
-  const handleAddData = async (data) => {
-    try {
-      await addData(data);
-
-      if (addError) {
-        setError("Error adding data:", addError);
-        return;
-      }
-
-      console.log("Added Data:", addedData);
-
-      setSuccess("Data added successfully: Please Refresh Page.");
-
-      // setList((prev) => [...prev, addedData]);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    error,
+    success,
+    deletingId,
+    handleExecuteQuery,
+    handleDelete,
+    handleUpdate,
+    handleCreate,
+    handleAddData,
+    showCreateForm,
+    setShowCreateForm,
+    isLoading,
+    deleteLoading,
+    updateLoading,
+    addLoading,
+    newItemData,
+    setNewItemData,
+  } = useExplorerCrud();
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
