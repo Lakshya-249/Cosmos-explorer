@@ -26,6 +26,7 @@ export const useQuery = () => {
       return `SELECT * FROM c OFFSET ${offset} LIMIT ${limit}`;
 
     validConditions.forEach((cond, index) => {
+      if (!cond.enabled) return;
       let conditionSql = "";
       let value = cond.value;
 

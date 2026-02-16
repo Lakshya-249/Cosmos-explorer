@@ -28,6 +28,7 @@ export const useConditions = () => {
           operator: "eq",
           value: "",
           connector: current.length > 0 ? "and" : null,
+          enabled: true,
         },
       ],
     });

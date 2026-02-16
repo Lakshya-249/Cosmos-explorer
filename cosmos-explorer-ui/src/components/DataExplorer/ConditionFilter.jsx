@@ -130,6 +130,15 @@ const ConditionFilter = ({
               >
                 <Trash2 className="w-4 h-4" />
               </button>
+
+              <input
+                type="checkbox"
+                checked={condition.enabled ?? true} // default to true if undefined
+                onChange={(e) =>
+                  updateCondition(condition.id, { enabled: e.target.checked })
+                }
+                className="w-4 h-4 mb-2"
+              />
             </div>
           ))}
         </div>
