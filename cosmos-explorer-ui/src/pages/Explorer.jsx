@@ -10,6 +10,7 @@ import CreateForm from "../components/DataExplorer/CreateForm";
 import { Loader2 } from "../components/Loader";
 import { ErrorResponse, SuccessResponse } from "../components/Response";
 import { Search, Plus } from "../icons/index";
+import { useExtractKeys } from "../hooks/ExtractKeys";
 
 const CosmosDBExplorer = ({ selectedCollection }) => {
   const [error, setError] = useState(null);
@@ -147,8 +148,12 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
 
   const offset = useMemo(() => (page - 1) * limit, [page, limit]);
 
+  const { extractKeys } = useExtractKeys();
+
   const suggestions = useMemo(() => {
-    return GetSuggestionsArray(data, selectedCollection);
+    let results = extractKeys(data, selectedCollection);
+    console.log("Suggestions: ", results);
+    return results;
   }, [data, selectedCollection]);
 
   return (
