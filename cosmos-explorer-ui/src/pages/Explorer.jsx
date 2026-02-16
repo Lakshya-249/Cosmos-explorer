@@ -151,7 +151,6 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
 
   const suggestions = useMemo(() => {
     let results = extractKeys(data, selectedCollection);
-    console.log("Suggestions: ", results);
     return results;
   }, [data, selectedCollection]);
 
