@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./pages/Sidebar.jsx";
 import CosmosDBExplorer from "./pages/Explorer.jsx";
-import { useEffect } from "react";
 import { setSelectedCollection } from "./utils/collection.store.js";
+import EmptyState from "./components/EmptyState.jsx";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -104,23 +104,19 @@ export default function App() {
         {/* ACTIVE TAB CONTENT */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex-1 overflow-hidden">
-            {tabs.map((tab) => (
-              <div
-                key={tab.id}
-                style={{ display: activeTab === tab.id ? "block" : "none" }}
-                className="h-full overflow-y-auto"
-              >
-                <CosmosDBExplorer selectedCollection={tab?.id} />
-              </div>
-            ))}
-
-            {/* {tabs
-              .filter((tab) => tab.id === activeTab)
-              .map((tab) => (
-                <div key={tab.id} className="h-full overflow-y-auto">
+            {tabs.length === 0 ? (
+              <EmptyState />
+            ) : (
+              tabs.map((tab) => (
+                <div
+                  key={tab.id}
+                  style={{ display: activeTab === tab.id ? "block" : "none" }}
+                  className="h-full overflow-y-auto"
+                >
                   <CosmosDBExplorer selectedCollection={tab?.id} />
                 </div>
-              ))}*/}
+              ))
+            )}
           </div>
         </div>
       </div>
