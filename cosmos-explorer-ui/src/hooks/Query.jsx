@@ -20,13 +20,14 @@ export const useQuery = () => {
       return `SELECT * FROM c OFFSET ${offset} LIMIT ${limit}`;
 
     let whereClause = "";
-    let validConditions = conditions.filter((cond) => cond.field && cond.value);
+    let validConditions = conditions.filter(
+      (cond) => cond.field && cond.value && cond.enabled,
+    );
 
     if (validConditions.length === 0 && !orderBy.field)
       return `SELECT * FROM c OFFSET ${offset} LIMIT ${limit}`;
 
     validConditions.forEach((cond, index) => {
-      if (!cond.enabled) return;
       let conditionSql = "";
       let value = cond.value;
 
