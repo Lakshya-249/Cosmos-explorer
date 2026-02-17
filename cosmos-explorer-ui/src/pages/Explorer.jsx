@@ -63,6 +63,7 @@ const CosmosDBExplorer = ({ selectedCollection }) => {
           {/* xl:grid-cols-2 */}
           <div className="space-y-6">
             <QueryBuilder
+              collection={selectedCollection}
               onExecuteQuery={handleExecuteQuery}
               offset={offset}
               limit={limit}

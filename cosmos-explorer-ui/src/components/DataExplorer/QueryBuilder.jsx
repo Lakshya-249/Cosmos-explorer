@@ -3,8 +3,10 @@ import { Play } from "lucide-react";
 import { useConditions } from "../../hooks/Conditions";
 import { useQuery } from "../../hooks/Query";
 import ConditionFilter from "./ConditionFilter";
+import { getActiveTab } from "../../utils/collection.store";
 
 const QueryBuilder = ({
+  collection,
   onExecuteQuery,
   offset = 0,
   limit = 10,
@@ -45,6 +47,8 @@ const QueryBuilder = ({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.ctrlKey && e.key === "Enter") {
+        const activeTab = getActiveTab();
+        if (activeTab !== collection) return;
         e.preventDefault();
         executeQuery();
       }
@@ -52,7 +56,7 @@ const QueryBuilder = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [executeQuery]);
+  }, [executeQuery, collection]);
 
   useEffect(() => {
     executeQuery();
