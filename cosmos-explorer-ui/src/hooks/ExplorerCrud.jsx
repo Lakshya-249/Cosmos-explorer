@@ -65,8 +65,6 @@ export const useExplorerCrud = () => {
         setError("Error Getting Data:", queryError);
         return;
       }
-
-      console.log(`Executing ${queryMode} query:`, query);
     } catch (err) {
       setError(err.message);
     }
@@ -108,10 +106,10 @@ export const useExplorerCrud = () => {
         setError("Error updating data:", updateError);
         return;
       }
-      console.log("DID NOW: ", did);
+
       setList((prev) => {
         const collectionId = getActiveTab();
-        console.log("Prev Data:", prev);
+
         if (!collectionId || !prev[collectionId]) return prev;
         return {
           ...prev,
@@ -135,8 +133,6 @@ export const useExplorerCrud = () => {
         setError("Error adding data:", addError);
         return;
       }
-
-      console.log("Added Data:", addedData);
 
       setSuccess("Data added successfully: Please Refresh Page.");
     } catch (err) {

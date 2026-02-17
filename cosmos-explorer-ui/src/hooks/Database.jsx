@@ -21,7 +21,7 @@ export const useDatabase = () => {
       }
 
       const result = await response.json();
-      console.log("Database added:", result);
+
       return result;
     } catch (err) {
       setError(err.message || "Failed to add database");
@@ -41,13 +41,13 @@ export const useDatabase = () => {
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch databases");
       }
       const result = await response.json();
-      console.log("Databases fetched:", result);
+
       const newSubFolders = (result?.databases || []).filter((sf) => {
         return !databases.some((s) => s.id === sf.id);
       });

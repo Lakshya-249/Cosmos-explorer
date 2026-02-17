@@ -13,8 +13,6 @@ export const useSidebarQuery = (onCollectionClick) => {
   const [errorPopUp, setErrorPopup] = useState("");
   const [selected, setSelected] = useState(getSelectedCollection());
 
-  console.log("INitial selected", selected);
-
   const { addConnection, getConnections, isLoading, connections } =
     useConnection();
 

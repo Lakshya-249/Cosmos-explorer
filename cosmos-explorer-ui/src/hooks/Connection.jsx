@@ -21,7 +21,7 @@ export const useConnection = () => {
       }
 
       const result = await response.json();
-      console.log("Connection added:", result);
+
       setConnections((prev) => [...prev, result?.data]);
       // return result; // return result so caller can use it
     } catch (err) {
@@ -45,7 +45,7 @@ export const useConnection = () => {
         throw new Error("Failed to fetch connections");
       }
       const result = await response.json();
-      console.log("Connections fetched:", result);
+
       setConnections(result?.connections || []);
       // return result; // return result so caller can use it
     } catch (err) {

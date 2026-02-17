@@ -27,12 +27,8 @@ const JsonViewer = ({
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
 
-  console.log("Deleting ID: ", deletingId);
-
   const handleSaveEdit = async (id) => {
     try {
-      console.log("Edit Value: ", editValue);
-
       const parsedData = JSON.parse(editValue);
       await onUpdate(id || "fdscx", parsedData);
       setEditValue("");

@@ -15,7 +15,7 @@ export const useCollection = () => {
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch collections");
@@ -23,7 +23,6 @@ export const useCollection = () => {
       const result = await response.json();
 
       setCollections((prev) => ({ ...prev, [id]: result?.collections || [] }));
-      console.log("Collections fetched:", collections);
 
       // return result;
     } catch (err) {
