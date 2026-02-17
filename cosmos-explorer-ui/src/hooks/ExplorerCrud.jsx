@@ -3,6 +3,7 @@ import { useAddData } from "./AddData";
 import { useUpdate } from "./Update";
 import { useDelete } from "./Delete";
 import { useQuery } from "./CollectionQuery";
+import { getActiveTab } from "../utils/collection.store";
 
 export const useExplorerCrud = () => {
   const [error, setError] = useState(null);
@@ -42,7 +43,6 @@ export const useExplorerCrud = () => {
   const handleCreate = async () => {
     try {
       const parsedData = JSON.parse(newItemData);
-      console.log(parsedData);
 
       await addData(parsedData);
 
@@ -83,7 +83,14 @@ export const useExplorerCrud = () => {
         return;
       }
 
-      setList((prev) => prev.filter((item) => item.id !== did));
+      setList((prev) => {
+        const collectionId = getActiveTab();
+        if (!collectionId || !prev[collectionId]) return prev;
+        return {
+          ...prev,
+          [collectionId]: prev[collectionId].filter((item) => item.id !== did),
+        };
+      });
       setSuccess("Data deleted successfully");
     } catch (err) {
       setError(err.message);
@@ -101,8 +108,18 @@ export const useExplorerCrud = () => {
         setError("Error updating data:", updateError);
         return;
       }
-
-      setList((prev) => prev.map((item) => (item.id === did ? data : item)));
+      console.log("DID NOW: ", did);
+      setList((prev) => {
+        const collectionId = getActiveTab();
+        console.log("Prev Data:", prev);
+        if (!collectionId || !prev[collectionId]) return prev;
+        return {
+          ...prev,
+          [collectionId]: prev[collectionId].map((item) =>
+            item.id === did ? data : item,
+          ),
+        };
+      });
 
       setSuccess("Data updated successfully");
     } catch (err) {
@@ -122,8 +139,6 @@ export const useExplorerCrud = () => {
       console.log("Added Data:", addedData);
 
       setSuccess("Data added successfully: Please Refresh Page.");
-
-      // setList((prev) => [...prev, addedData]);
     } catch (err) {
       setError(err.message);
     }
