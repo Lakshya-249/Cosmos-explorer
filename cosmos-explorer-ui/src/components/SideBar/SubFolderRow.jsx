@@ -1,41 +1,45 @@
 import {
   ChevronDown,
   ChevronRight,
-  File,
   Folder,
   FolderOpen,
   Loader,
 } from "lucide-react";
+import FileRow from "./FileRow";
 
 const SubFolderRow = ({
-  subFolderLoader,
   children,
   openSubFolders,
   collections,
   filesLoader,
-  toggleSubFolderClose,
   toggleSubFolderOpen,
   handleSelectedFile,
   folder,
   open,
+  dbLoading,
+  selected,
 }) => {
   return (
     <div className="ml-6 mt-2 space-y-2 border-l border-gray-200 pl-3">
-      {subFolderLoader && (
+      {/* Database loading (while fetching databases) */}
+      {dbLoading && (
         <div className="flex items-center gap-2 text-gray-400">
-          <Loader />
+          <Loader className="animate-spin" size={16} />
         </div>
       )}
+
       {children.map((sub) => {
-        const subOpen = openSubFolders[sub.id] || false;
-        const files = collections[sub.id] || [];
-        const isLoading = filesLoader[sub.id] || false;
+        const subOpen = openSubFolders?.[sub.id] ?? false;
+        const files = collections?.[sub.id] ?? [];
+        const isLoading = filesLoader?.[sub.id] ?? false;
 
         return (
           <div key={sub.id}>
-            {/* Subfolder */}
-
+            {/* SUBFOLDER ROW */}
             <div
+              onClick={() =>
+                toggleSubFolderOpen(sub.id, sub.parentId, sub.name)
+              }
               className="flex items-center justify-between cursor-pointer p-2 rounded-md
               hover:bg-gray-50 transition"
             >
@@ -47,49 +51,31 @@ const SubFolderRow = ({
                     <Folder size={16} className="text-green-600" />
                   )}
                 </span>
-                {open && sub.name}
+
+                {open && (
+                  <span className="truncate max-w-[160px]">{sub.name}</span>
+                )}
               </span>
+
               {open &&
                 (subOpen ? (
-                  <ChevronDown
-                    size={14}
-                    className="text-gray-400"
-                    onClick={() => toggleSubFolderClose(sub.id)}
-                  />
+                  <ChevronDown size={14} className="text-gray-400" />
                 ) : (
-                  <ChevronRight
-                    size={14}
-                    className="text-gray-400"
-                    onClick={() =>
-                      toggleSubFolderOpen(sub.id, sub.parentId, sub.name)
-                    }
-                  />
+                  <ChevronRight size={14} className="text-gray-400" />
                 ))}
             </div>
 
-            {/* Files */}
+            {/* FILES */}
             {subOpen && (
-              <div className="ml-6 mt-1 space-y-1 border-l border-gray-100 pl-3">
-                {isLoading && open && (
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <Loader />
-                  </div>
-                )}
-                {!isLoading &&
-                  files.map((file, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() =>
-                        handleSelectedFile(folder.id, sub.name, file)
-                      }
-                      className="flex items-center gap-2 p-1 rounded-md cursor-pointer flex-wrap
-                      hover:bg-blue-50 hover:text-blue-600 transition"
-                    >
-                      <File size={14} className="text-gray-500" />
-                      {open && file}
-                    </div>
-                  ))}
-              </div>
+              <FileRow
+                handleSelectedFile={handleSelectedFile}
+                isLoading={isLoading}
+                open={open}
+                files={files}
+                folder={folder}
+                sub={sub}
+                selected={selected}
+              />
             )}
           </div>
         );
