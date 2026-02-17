@@ -17,7 +17,6 @@ const SubFolderRow = ({
   folder,
   open,
   dbLoading,
-  selected,
 }) => {
   return (
     <div className="ml-6 mt-2 space-y-2 border-l border-gray-200 pl-3">
@@ -74,7 +73,6 @@ const SubFolderRow = ({
                 files={files}
                 folder={folder}
                 sub={sub}
-                selected={selected}
               />
             )}
           </div>

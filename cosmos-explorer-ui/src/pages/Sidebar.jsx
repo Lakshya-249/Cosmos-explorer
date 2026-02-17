@@ -15,7 +15,6 @@ export default function Sidebar({ open, setOpen, onCollectionClick }) {
     openFolders,
     openSubFolders,
     errorPopUp,
-    selected,
     getConnections,
     isLoading,
     connections,
@@ -77,7 +76,6 @@ export default function Sidebar({ open, setOpen, onCollectionClick }) {
                   collections={collections}
                   filesLoader={filesLoader}
                   dbLoading={dbLoading}
-                  selected={selected}
                 />
               )}
             </div>

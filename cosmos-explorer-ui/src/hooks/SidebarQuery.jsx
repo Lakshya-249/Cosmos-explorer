@@ -2,16 +2,12 @@ import { useState, useCallback } from "react";
 import { useDatabase } from "./Database";
 import { useCollection } from "./Collection";
 import { useConnection } from "./Connection";
-import {
-  getSelectedCollection,
-  setSelectedCollection,
-} from "../utils/collection.store";
+import { setSelectedCollection } from "../utils/collection.store";
 
 export const useSidebarQuery = (onCollectionClick) => {
   const [openFolders, setOpenFolders] = useState({});
   const [openSubFolders, setOpenSubFolders] = useState({});
   const [errorPopUp, setErrorPopup] = useState("");
-  const [selected, setSelected] = useState(getSelectedCollection());
 
   const { addConnection, getConnections, isLoading, connections } =
     useConnection();
@@ -68,7 +64,6 @@ export const useSidebarQuery = (onCollectionClick) => {
 
   const handleSelectedFile = useCallback(
     (id, database, file) => {
-      setSelected({ id, database, collection: file });
       onCollectionClick({ id, file, database });
       setSelectedCollection(id, database, file);
     },
@@ -83,7 +78,6 @@ export const useSidebarQuery = (onCollectionClick) => {
     openFolders,
     openSubFolders,
     errorPopUp,
-    selected,
     getConnections,
     isLoading,
     connections,
