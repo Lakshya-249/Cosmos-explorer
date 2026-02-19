@@ -25,3 +25,14 @@ export default function Loader() {
     </div>
   );
 }
+
+export const Loader2 = () => {
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-8">
+      <div className="flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Executing query...</span>
+      </div>
+    </div>
+  );
+};

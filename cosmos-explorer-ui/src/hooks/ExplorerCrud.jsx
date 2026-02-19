@@ -1,0 +1,162 @@
+import { useState } from "react";
+import { useAddData } from "./AddData";
+import { useUpdate } from "./Update";
+import { useDelete } from "./Delete";
+import { useQuery } from "./CollectionQuery";
+import { getActiveTab } from "../utils/collection.store";
+
+export const useExplorerCrud = () => {
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newItemData, setNewItemData] = useState(
+    '{\n  "id": "",\n  "name": "",\n  "email": ""\n}',
+  );
+  const [deletingId, setDeletingId] = useState(null);
+  const {
+    isLoading,
+    error: queryError,
+    fetchQuery,
+    data,
+    setData: setList,
+  } = useQuery();
+
+  const {
+    isLoading: deleteLoading,
+    error: deleteerror,
+    deleteData,
+  } = useDelete();
+
+  const {
+    isLoading: updateLoading,
+    error: updateError,
+    updateData,
+  } = useUpdate();
+
+  const {
+    isLoading: addLoading,
+    error: addError,
+    addData,
+    data: addedData,
+  } = useAddData();
+
+  const handleCreate = async () => {
+    try {
+      const parsedData = JSON.parse(newItemData);
+
+      await addData(parsedData);
+
+      setSuccess("Data added successfully: Please Refresh Page.");
+      setShowCreateForm(false);
+      setNewItemData('{\n  "id": "",\n  "name": "",\n  "email": ""\n}');
+    } catch (error) {
+      console.log("Error creating new item:", error);
+      alert("Invalid JSON format. Please check your syntax.");
+    }
+  };
+
+  const handleExecuteQuery = async (query, queryMode) => {
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await fetchQuery(query);
+      if (queryError) {
+        setError("Error Getting Data:", queryError);
+        return;
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDelete = async (did) => {
+    setError(null);
+
+    try {
+      setDeletingId(did);
+      await deleteData(did);
+      if (deleteerror) {
+        setError("Error deleting data:", deleteerror);
+        return;
+      }
+
+      setList((prev) => {
+        const collectionId = getActiveTab();
+        if (!collectionId || !prev[collectionId]) return prev;
+        return {
+          ...prev,
+          [collectionId]: prev[collectionId].filter((item) => item.id !== did),
+        };
+      });
+      setSuccess("Data deleted successfully");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleUpdate = async (did, data) => {
+    setError(null);
+
+    try {
+      await updateData(data);
+      if (updateError) {
+        setError("Error updating data:", updateError);
+        return;
+      }
+
+      setList((prev) => {
+        const collectionId = getActiveTab();
+
+        if (!collectionId || !prev[collectionId]) return prev;
+        return {
+          ...prev,
+          [collectionId]: prev[collectionId].map((item) =>
+            item.id === did ? data : item,
+          ),
+        };
+      });
+
+      setSuccess("Data updated successfully");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleAddData = async (data) => {
+    try {
+      await addData(data);
+
+      if (addError) {
+        setError("Error adding data:", addError);
+        return;
+      }
+
+      setSuccess("Data added successfully: Please Refresh Page.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  return {
+    data,
+    error,
+    success,
+    deletingId,
+    handleExecuteQuery,
+    handleDelete,
+    handleUpdate,
+    handleCreate,
+    handleAddData,
+    showCreateForm,
+    setShowCreateForm,
+    isLoading,
+    deleteLoading,
+    updateLoading,
+    addLoading,
+    newItemData,
+    setNewItemData,
+  };
+};
