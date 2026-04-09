@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./cosmos-server
+    container_name: cosmos_server
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:4000/api/healthy').then(res => { if (!res.ok) process.exit(1) })",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 1
+      start_period: 5s
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./cosmos-explorer-ui
+    container_name: cosmos_explorer_ui
+    ports:
+      - "5000:80"
+    depends_on:
+      backend:
+        condition: service_healthy

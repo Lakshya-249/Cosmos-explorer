@@ -3,6 +3,10 @@ import userController from "../controller/user.controller.js";
 
 const router = Router();
 
+router.get("/healthy", (_req, res) => {
+  res.status(200).send("OK");
+});
+
 router.post("/add-connection", userController.addConnection);
 
 router.get("/get-connections", userController.getConnections);
@@ -11,27 +15,27 @@ router.get("/connections/:id/databases", userController.getDatabases);
 
 router.get(
   "/connections/:id/databases/:database/collections",
-  userController.getCollections
+  userController.getCollections,
 );
 
 router.post(
   "/connections/:id/databases/:database/collections/:collection/filter",
-  userController.getFilterData
+  userController.getFilterData,
 );
 
 router.post(
   "/connections/:id/databases/:database/collections/:collection/add",
-  userController.addDataToCollection
+  userController.addDataToCollection,
 );
 
 router.put(
   "/connections/:id/databases/:database/collections/:collection/update",
-  userController.updateDataInCollection
+  userController.updateDataInCollection,
 );
 
 router.delete(
   "/connections/:id/databases/:database/collections/:collection/delete",
-  userController.deleteDataFromCollection
+  userController.deleteDataFromCollection,
 );
 
 export default router;
