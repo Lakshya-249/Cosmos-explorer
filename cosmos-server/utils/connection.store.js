@@ -1,10 +1,25 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
-import { CosmosClient } from "@azure/cosmos";
 import { getConnectionClient, setConnectionClient } from "./client.store.js";
+import { CosmosClient } from "@azure/cosmos";
 
-const adapter = new JSONFile("database/cosmos-config.json");
-const db = new Low(adapter, { cosmosConnections: [] });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const databaseDir = path.join(__dirname, "../database");
+
+fs.mkdirSync(databaseDir, { recursive: true });
+
+const dbPath = path.join(databaseDir, "cosmos-config.json");
+
+const adapter = new JSONFile(dbPath);
+
+const db = new Low(adapter, {
+  cosmosConnections: [],
+});
 
 export class ConnectionStore {
   static async saveConnection(id, endpoint, key, name) {
@@ -58,7 +73,7 @@ export class ConnectionStore {
   static async deleteConnection(id) {
     await db.read();
     db.data.cosmosConnections = db.data.cosmosConnections.filter(
-      (c) => c.id !== id
+      (c) => c.id !== id,
     );
     await db.write();
   }
